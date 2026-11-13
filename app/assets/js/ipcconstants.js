@@ -1,7 +1,7 @@
 // NOTE FOR THIRD-PARTY
 // REPLACE THIS CLIENT ID WITH YOUR APPLICATION ID.
 // SEE https://github.com/dscalzi/HeliosLauncher/blob/master/docs/MicrosoftAuth.md
-// (13/11/2026) application « MineWorld Launcher » inscrite sur Azure par Jonathan (cet identifiant n'est pas secret)
+// (13/11/2026) application « MineWorld Launcher » inscrite sur Azure (cet identifiant n'est pas secret)
 exports.AZURE_CLIENT_ID = 'fa4574f8-e2e2-4f55-9255-8c26c9a099d2'
 // SEE NOTE ABOVE.
 
