@@ -16,7 +16,7 @@
                 <svg viewBox="0 0 24 24"><path d="M12 2.8l2.75 5.86 6.35.78-4.68 4.38 1.22 6.3L12 17.02l-5.64 3.1 1.22-6.3L2.9 9.44l6.35-.78z"/></svg>
                 <span>Événements</span>
             </button>
-            <button class="mwNavItem" id="settingsMediaButton">
+            <button class="mwNavItem" data-page="parametres">
                 <svg viewBox="0 0 24 24" class="mwTrait"><circle cx="12" cy="12" r="5.6"/><circle cx="12" cy="12" r="1.9" class="mwPlein"/><path d="M12 2.6v3M12 18.4v3M2.6 12h3M18.4 12h3M5.35 5.35l2.12 2.12M16.53 16.53l2.12 2.12M5.35 18.65l2.12-2.12M16.53 7.47l2.12-2.12"/></svg>
                 <span><%- lang('landing.settingsTooltip') %></span>
             </button>
@@ -35,6 +35,7 @@
                     <span id="mwCompteType">Microsoft</span>
                 </span>
                 <span id="mwCompteAucun">Connexion requise</span>
+                <span id="mwCompteOfficiel">Launcher officiel</span>
             </div>
             <button id="avatarOverlay" title="Gérer le compte"><%- lang('landing.usernameEditButton') %></button>
         </div>
@@ -83,6 +84,33 @@
             <div class="mwEntete mwGrand"><h2>Événements</h2></div>
             <div class="mwListe" id="mwListeEvenements"></div>
         </section>
+        <!-- Paramètres MineWorld (les réglages d'origine restent dans « Réglages avancés ») -->
+        <section class="mwPage" id="mwPage_parametres" hidden>
+            <div class="mwEntete mwGrand"><h2>Paramètres</h2></div>
+            <h3 class="mwSousTitre">Lancement du jeu</h3>
+            <button class="mwChoix" data-mode="officiel">
+                <i class="mwRadio"></i>
+                <span class="mwChoixTexte">
+                    <span class="mwChoixTitre">Par le launcher officiel de Minecraft <span class="mwPetitBadge mwVert">Disponible</span></span>
+                    <span class="mwChoixDetail">MineWorld met tout à jour, puis ouvre le launcher officiel sur le profil MineWorld. Tu cliques sur « Jouer » là-bas.</span>
+                </span>
+            </button>
+            <button class="mwChoix" data-mode="direct">
+                <i class="mwRadio"></i>
+                <span class="mwChoixTexte">
+                    <span class="mwChoixTitre">Directement depuis MineWorld <span class="mwPetitBadge mwAmbre">En attente de Microsoft</span></span>
+                    <span class="mwChoixDetail">Un seul clic sur JOUER, avec ton compte Microsoft. Marche seulement quand Microsoft aura validé le launcher (demande envoyée le 13 novembre).</span>
+                </span>
+            </button>
+            <h3 class="mwSousTitre">Dossier du profil MineWorld</h3>
+            <div class="mwChemin">
+                <span id="mwCheminJeu">…</span>
+                <button id="mwOuvrirDossier" class="mwBoutonGris">Ouvrir</button>
+            </div>
+            <p class="mwNote">Tes mondes solo et ton profil Minecraft habituel ne sont pas touchés.</p>
+            <h3 class="mwSousTitre">Autres réglages</h3>
+            <button id="settingsMediaButton" class="mwBoutonGris mwLarge">Réglages avancés (comptes, mémoire, Java, mises à jour du launcher)</button>
+        </section>
     </main>
 
     <footer id="mwBarre">
@@ -116,6 +144,12 @@
             </button>
         </div>
     </footer>
+
+    <!-- Fenêtre « Dernière étape » / erreurs du mode « launcher officiel » (remplie par mineworld-accueil.js) -->
+    <div id="mwModale" hidden>
+        <div id="mwModaleCarte" role="dialog" aria-modal="true"></div>
+        <p id="mwModaleNote"></p>
+    </div>
 
     <!-- Éléments d'origine de Helios, gardés cachés : landing.js et uibinder.js s'en servent encore. -->
     <div id="mwAncien" style="display: none;">

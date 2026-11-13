@@ -11,7 +11,11 @@
  */
 (function(){
     const MW = require('./assets/js/mineworld')
+    const Officiel = require('./assets/js/mineworld-officiel')
     const gotMW = require('got')
+    const cheminMW = require('path')
+    const fsMW = require('fs')
+    const { shell: shellMW } = require('electron')
     const journal = LoggerUtil.getLogger('MineWorld')
 
     const IMAGE_OK = /^images\/[A-Za-z0-9._-]{1,80}\.(png|jpg|jpeg|webp|gif)$/
@@ -20,6 +24,7 @@
 
     let actus = []
     let majs = []
+    let versionMod = null
     let diapos = []
     let diapo = 0
     let minuteur = null
@@ -82,8 +87,20 @@
         }
     }
 
+    window.mwAller = (page) => {
+        if(page === 'parametres') afficherParametres()
+        if(typeof getCurrentView === 'function' && getCurrentView() !== VIEWS.landing){
+            switchView(getCurrentView(), VIEWS.landing, 300, 300, () => aller(page))
+        } else {
+            aller(page)
+        }
+    }
+
     for(const b of document.querySelectorAll('#mwNav .mwNavItem[data-page]')){
-        b.addEventListener('click', () => aller(b.getAttribute('data-page')))
+        b.addEventListener('click', () => {
+            if(b.getAttribute('data-page') === 'parametres') afficherParametres()
+            aller(b.getAttribute('data-page'))
+        })
     }
     for(const b of document.querySelectorAll('[data-aller]')){
         b.addEventListener('click', () => aller(b.getAttribute('data-aller')))
@@ -299,8 +316,168 @@
         } catch(err) {
             journal.debug(err)
         }
-        document.getElementById('mwEtatDetail').textContent = (mod ? 'Mod ' + mod + ' · ' : '') + 'Minecraft ' + mc + ' · Fabric'
+        versionMod = mod
+        const fin = ConfigManager.getModeLancement() === 'officiel' ? 'lancement par le launcher officiel' : 'Minecraft ' + mc + ' · Fabric'
+        document.getElementById('mwEtatDetail').textContent = (mod ? 'Mod ' + mod + ' · ' : '') + fin
     }
+
+    /* ───────────── Paramètres : mode de lancement ───────────── */
+
+    function afficherParametres(){
+        const mode = ConfigManager.getModeLancement()
+        for(const c of document.querySelectorAll('#mwPage_parametres .mwChoix')){
+            c.toggleAttribute('choisi', c.getAttribute('data-mode') === mode)
+        }
+        document.getElementById('mwCheminJeu').textContent = cheminMW.join(Officiel.dossierMinecraft(), 'mineworld')
+    }
+
+    for(const c of document.querySelectorAll('#mwPage_parametres .mwChoix')){
+        c.addEventListener('click', () => {
+            ConfigManager.setModeLancement(c.getAttribute('data-mode'))
+            ConfigManager.save()
+            afficherParametres()
+            if(typeof updateSelectedAccount === 'function') updateSelectedAccount(ConfigManager.getSelectedAccount())
+            chargerEtat()
+        })
+    }
+
+    document.getElementById('mwOuvrirDossier').addEventListener('click', async () => {
+        const d = cheminMW.join(Officiel.dossierMinecraft(), 'mineworld')
+        try {
+            require('fs').mkdirSync(d, { recursive: true })
+        } catch(e) { /* rien */ }
+        shellMW.openPath(d)
+    })
+
+    /* ───────────── fenêtre « Dernière étape » et erreurs ───────────── */
+
+    function fermerModale(){
+        document.getElementById('mwModale').hidden = true
+    }
+
+    function bouton(texte, classe, action){
+        const b = el('button', classe, texte)
+        b.addEventListener('click', action)
+        return b
+    }
+
+    function modale(genre, titre, sousTitre, corps, boutons, note){
+        const carte = document.getElementById('mwModaleCarte')
+        carte.replaceChildren()
+        carte.setAttribute('genre', genre)
+        const haut = el('div', 'mwModaleHaut')
+        if(genre !== 'etape'){
+            const ic = el('i', 'mwModaleIcone', genre === 'attente' ? 'i' : '!')
+            haut.appendChild(ic)
+        }
+        const t = el('div', 'mwModaleTitres')
+        t.appendChild(el('h2', null, titre))
+        if(sousTitre) t.appendChild(el('p', null, sousTitre))
+        haut.appendChild(t)
+        carte.appendChild(haut)
+        if(corps) carte.appendChild(corps)
+        const bas = el('div', 'mwModaleBoutons')
+        boutons.forEach(b => bas.appendChild(b))
+        carte.appendChild(bas)
+        document.getElementById('mwModaleNote').textContent = note || ''
+        document.getElementById('mwModale').hidden = false
+    }
+
+    function ligneEtape(faite, titre, detail){
+        const l = el('div', faite ? 'mwEtape' : 'mwEtape mwAFaire')
+        const rond = el('i', 'mwEtapeRond')
+        rond.innerHTML = faite
+            ? '<svg viewBox="0 0 24 24" class="mwTrait"><path d="M5 12.5l4.4 4.4L19 7.4"/></svg>'
+            : '<svg viewBox="0 0 24 24" class="mwTrait"><path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/></svg>'
+        l.appendChild(rond)
+        const t = el('div', 'mwEtapeTexte')
+        t.appendChild(el('span', 'mwEtapeTitre', titre))
+        ;(Array.isArray(detail) ? detail : [detail]).forEach(d => t.appendChild(el('span', 'mwEtapeDetail', d)))
+        l.appendChild(t)
+        return l
+    }
+
+    function iconeProfil(){
+        try {
+            return 'data:image/png;base64,' + fsMW.readFileSync(cheminMW.join(__dirname, 'assets', 'images', 'icone_profil.png')).toString('base64')
+        } catch(e) {
+            return null
+        }
+    }
+
+    function introuvable(){
+        modale('erreur', 'Launcher officiel introuvable',
+            'Installe le launcher officiel de Minecraft (site minecraft.net ou boutique Microsoft), ouvre-le et connecte-toi une fois, puis reviens ici.',
+            null,
+            [bouton('Ouvrir minecraft.net', 'mwBoutonCyan', () => shellMW.openExternal('https://www.minecraft.net/download')),
+                bouton('Réessayer', 'mwBoutonGris', () => { fermerModale(); window.mwLancerOfficiel() }),
+                bouton('Fermer', 'mwBoutonLien', fermerModale)])
+    }
+
+    let enCours = false
+
+    window.mwLancerOfficiel = async function(){
+        if(enCours) return
+        enCours = true
+        fermerModale()
+        toggleLaunchArea(true)
+        setLaunchDetails('Préparation…')
+        setLaunchPercentage(0)
+        try {
+            const mc = Officiel.dossierMinecraft()
+            if((await Officiel.fichiersProfils(mc)).length === 0){
+                introuvable()
+                return
+            }
+            const distro = await DistroAPI.refreshDistributionOrFallback()
+            const serv = distro.getServerById(ConfigManager.getSelectedServer()) || distro.getMainServer()
+            let ram = null
+            try { ram = ConfigManager.getMaxRAM(serv.rawServer.id) } catch(e) { /* réglage absent : 4G */ }
+            const ouvert = await Officiel.launcherOuvert()
+            const r = await Officiel.preparer(serv.rawServer, {
+                ram,
+                icone: iconeProfil(),
+                ecrireProfil: !ouvert,
+                progression: (p, texte) => { setLaunchPercentage(p); setLaunchDetails(texte) }
+            })
+            if(r.profil === 'a-ecrire'){
+                modale('attente', 'Ferme le launcher officiel',
+                    'Il faut ajouter le profil MineWorld au launcher officiel, et il est ouvert en ce moment. Ferme-le complètement, puis clique sur « Réessayer ».',
+                    null,
+                    [bouton('Réessayer', 'mwBoutonCyan', () => { fermerModale(); window.mwLancerOfficiel() }),
+                        bouton('Annuler', 'mwBoutonLien', fermerModale)])
+                return
+            }
+            if(!await Officiel.ouvrirLauncher()){
+                introuvable()
+                return
+            }
+            const corps = el('div', 'mwEtapes')
+            corps.appendChild(ligneEtape(true, 'Mod MineWorld à jour', (versionMod ? versionMod + ' · ' : '') + 'signature vérifiée'))
+            corps.appendChild(ligneEtape(true, 'Fabric et Simple Voice Chat prêts', 'Minecraft ' + serv.rawServer.minecraftVersion))
+            corps.appendChild(ligneEtape(true, 'Profil « MineWorld » prêt', 'dans le launcher officiel, avec son propre dossier'))
+            corps.appendChild(ligneEtape(false, 'Clique sur « Jouer » dans le launcher officiel', [
+                'Vérifie que le profil « MineWorld » est choisi à côté du bouton.',
+                'La connexion à ton compte Microsoft se fait là-bas. Le jeu rejoint ensuite le serveur tout seul.']))
+            modale('etape', 'Dernière étape', 'Le launcher officiel de Minecraft s\'ouvre, sur le profil MineWorld.', corps,
+                [bouton('Rouvrir le launcher officiel', 'mwBoutonGris', () => Officiel.ouvrirLauncher()),
+                    bouton('Compris', 'mwBoutonCyan', fermerModale)],
+                'Bientôt : lancement direct depuis MineWorld, dès que Microsoft aura validé le launcher.')
+        } catch(err) {
+            journal.error('Lancement par le launcher officiel impossible.', err)
+            modale('erreur', 'Lancement impossible', String(err && err.message ? err.message : err), null,
+                [bouton('Réessayer', 'mwBoutonCyan', () => { fermerModale(); window.mwLancerOfficiel() }),
+                    bouton('Fermer', 'mwBoutonLien', fermerModale)])
+        } finally {
+            remote.getCurrentWindow().setProgressBar(-1)
+            toggleLaunchArea(false)
+            enCours = false
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape' && !document.getElementById('mwModale').hidden) fermerModale()
+    })
 
     chargerActualites()
     chargerEtat()

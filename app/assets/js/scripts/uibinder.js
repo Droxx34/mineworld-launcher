@@ -84,7 +84,8 @@ async function showMainUI(data){
             currentView = VIEWS.welcome
             $(VIEWS.welcome).fadeIn(1000)
         } else {
-            if(isLoggedIn){
+            // MineWorld : en mode « launcher officiel », l'accueil s'ouvre même sans compte connecté ici.
+            if(isLoggedIn || ConfigManager.getModeLancement() === 'officiel'){
                 currentView = VIEWS.landing
                 $(VIEWS.landing).fadeIn(1000)
             } else {

@@ -112,6 +112,11 @@ function setLaunchEnabled(val){
 
 // Bind launch button
 document.getElementById('launch_button').addEventListener('click', async e => {
+    // MineWorld : mode « launcher officiel » (voir mineworld-accueil.js et mineworld-officiel.js).
+    if(ConfigManager.getModeLancement() === 'officiel'){
+        await window.mwLancerOfficiel()
+        return
+    }
     // MineWorld : sans compte choisi, JOUER mène à la connexion Microsoft au lieu de lancer le jeu.
     if(ConfigManager.getSelectedAccount() == null){
         loginOptionsCancelEnabled(true)
@@ -156,6 +161,11 @@ document.getElementById('settingsMediaButton').onclick = async e => {
 
 // Bind avatar overlay button.
 document.getElementById('avatarOverlay').onclick = async e => {
+    // MineWorld : en mode « launcher officiel », le compte est géré là-bas : on ouvre nos Paramètres.
+    if(ConfigManager.getModeLancement() === 'officiel'){
+        window.mwAller('parametres')
+        return
+    }
     await prepareSettings()
     switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
         settingsNavItemListener(document.getElementById('settingsNavAccount'), false)
@@ -168,6 +178,13 @@ function updateSelectedAccount(authUser){
     let username = Lang.queryJS('landing.selectedAccount.noAccountSelected')
     const avatar = document.getElementById('avatarContainer')
     avatar.style.backgroundImage = ''
+    if(ConfigManager.getModeLancement() === 'officiel'){
+        // le compte est celui du launcher officiel : on ne l'affiche pas ici
+        avatar.style.backgroundImage = 'url(\'assets/images/icone_profil.png\')'
+        document.getElementById('mwCompte').setAttribute('officiel', '')
+        user_text.textContent = 'Compte Minecraft'
+        return
+    }
     if(authUser != null){
         if(authUser.displayName != null){
             username = authUser.displayName
@@ -178,6 +195,7 @@ function updateSelectedAccount(authUser){
         document.getElementById('mwCompteType').textContent = authUser.type === 'microsoft' ? 'Microsoft' : 'Hors ligne'
     }
     document.getElementById('mwCompte').toggleAttribute('connecte', authUser != null)
+    document.getElementById('mwCompte').toggleAttribute('officiel', ConfigManager.getModeLancement() === 'officiel')
     user_text.textContent = username
 }
 updateSelectedAccount(ConfigManager.getSelectedAccount())

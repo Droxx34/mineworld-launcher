@@ -1000,3 +1000,319 @@ svg.mwTrait .mwPlein {
     font-weight: 600;
     color: var(--mw-t2);
 }
+
+/* ───────────── mode « launcher officiel » (13/11/2026) ───────────── */
+
+#mwCompteOfficiel {
+    display: none;
+    font-size: 11.5px;
+    color: var(--mw-t3);
+}
+#mwCompte[officiel] #mwCompteBadge,
+#mwCompte[officiel] #mwCompteAucun {
+    display: none;
+}
+#mwCompte[officiel] #mwCompteOfficiel {
+    display: inline;
+}
+#mwCompte[officiel] #user_text {
+    font-size: 13px;
+}
+#mwCompte[officiel] #avatarContainer {
+    image-rendering: auto;
+}
+
+/* page Paramètres */
+#mwPage_parametres {
+    max-width: 640px;
+}
+.mwSousTitre {
+    margin: 22px 0 10px !important;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--mw-t2);
+}
+.mwChoix {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 18px 20px;
+    box-sizing: border-box;
+    border-radius: 14px;
+    border: 1px solid var(--mw-bord);
+    background: var(--mw-carte);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.mwChoix:hover {
+    border-color: var(--mw-bord-fort);
+}
+.mwChoix[choisi] {
+    border: 1.5px solid rgba(63, 208, 212, 0.6);
+    background: rgba(63, 208, 212, 0.08);
+}
+.mwRadio {
+    flex: none;
+    position: relative;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    border-radius: 50%;
+    border: 2px solid #505A66;
+    box-sizing: border-box;
+}
+.mwChoix[choisi] .mwRadio {
+    border-color: var(--mw-cyan);
+}
+.mwChoix[choisi] .mwRadio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--mw-cyan);
+}
+.mwChoixTexte {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.mwChoixTitre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--mw-t1);
+}
+.mwChoixDetail {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--mw-t2);
+}
+.mwPetitBadge {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+.mwAmbre {
+    background: rgba(242, 190, 76, 0.14);
+    color: #F2BE4C;
+}
+.mwChemin {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 8px 8px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--mw-bord);
+    background: var(--mw-carte);
+}
+#mwCheminJeu {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mw-t1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    text-align: left;
+    -webkit-user-select: text;
+}
+.mwNote {
+    margin-top: 8px !important;
+    font-size: 12px;
+    color: var(--mw-t3);
+}
+.mwBoutonGris,
+.mwBoutonCyan,
+.mwBoutonLien {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 11px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s ease, background 0.15s ease;
+}
+.mwBoutonGris {
+    border: 1px solid var(--mw-bord);
+    background: var(--mw-carte2);
+    color: var(--mw-t1);
+}
+.mwBoutonGris:hover {
+    background: #252C35;
+}
+.mwBoutonCyan {
+    border: none;
+    background: #24B0B6;
+    color: #fff;
+    font-weight: 700;
+}
+.mwBoutonCyan:hover {
+    filter: brightness(1.08);
+}
+.mwBoutonLien {
+    border: none;
+    background: none;
+    color: var(--mw-cyan);
+}
+.mwLarge {
+    width: 100%;
+    text-align: left;
+}
+
+/* fenêtre « Dernière étape » */
+#mwModale {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: rgba(6, 8, 11, 0.7);
+    animation: mwApparait 0.25s ease;
+}
+#mwModale[hidden] {
+    display: none;
+}
+#mwModaleCarte {
+    width: 560px;
+    max-width: calc(100% - 48px);
+    padding: 32px 36px 28px;
+    box-sizing: border-box;
+    border-radius: 22px;
+    border: 1px solid var(--mw-bord);
+    background: #14181E;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+}
+#mwModaleCarte[genre="erreur"] {
+    border-color: rgba(232, 93, 128, 0.5);
+}
+.mwModaleHaut {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+.mwModaleIcone {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: var(--mw-rose);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    font-style: normal;
+}
+#mwModaleCarte[genre="attente"] .mwModaleIcone {
+    background: #F2BE4C;
+    color: #2A1E05;
+}
+.mwModaleTitres h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mw-t1);
+}
+.mwModaleTitres p {
+    margin-top: 8px !important;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--mw-t2);
+}
+.mwEtapes {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 24px;
+}
+.mwEtape {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+.mwEtape.mwAFaire {
+    margin: 2px -12px 0;
+    padding: 14px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(63, 208, 212, 0.55);
+    background: rgba(63, 208, 212, 0.1);
+}
+.mwEtapeRond {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--mw-vert);
+    color: #0E2818;
+}
+.mwAFaire .mwEtapeRond {
+    background: var(--mw-cyan);
+    color: #0A2A2C;
+}
+.mwEtapeRond svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.8;
+}
+.mwEtapeTexte {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 3px;
+}
+.mwEtapeTitre {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mw-t1);
+}
+.mwAFaire .mwEtapeTitre {
+    font-weight: 700;
+}
+.mwEtapeDetail {
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--mw-t3);
+}
+.mwAFaire .mwEtapeDetail {
+    color: var(--mw-t2);
+}
+.mwModaleBoutons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+}
+.mwModaleBoutons .mwBoutonCyan {
+    margin-left: auto;
+    min-width: 120px;
+}
+#mwModaleCarte:not([genre="etape"]) .mwModaleBoutons {
+    padding-left: 42px;
+}
+#mwModaleCarte:not([genre="etape"]) .mwModaleBoutons .mwBoutonCyan {
+    margin-left: 0;
+}
+#mwModaleNote {
+    font-size: 12px;
+    color: #BEC6D0;
+}

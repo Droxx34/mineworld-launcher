@@ -86,7 +86,9 @@ const DEFAULT_CONFIG = {
         },
         launcher: {
             allowPrerelease: false,
-            dataDirectory: dataPath
+            dataDirectory: dataPath,
+            // MineWorld (13/11/2026) : 'officiel' (par le launcher officiel de Minecraft) ou 'direct'
+            mwModeLancement: 'officiel'
         }
     },
     newsCache: {
@@ -790,4 +792,22 @@ exports.getAllowPrerelease = function(def = false){
  */
 exports.setAllowPrerelease = function(allowPrerelease){
     config.settings.launcher.allowPrerelease = allowPrerelease
+}
+
+/**
+ * MineWorld (13/11/2026) : mode de lancement du jeu.
+ * 'officiel' : MineWorld prépare tout puis ouvre le launcher officiel de Minecraft (pas besoin de connexion ici).
+ * 'direct' : lancement par ce launcher, avec la connexion Microsoft (il faut que Microsoft ait validé le launcher).
+ *
+ * @returns {string} 'officiel' ou 'direct'.
+ */
+exports.getModeLancement = function(){
+    return config.settings.launcher.mwModeLancement === 'direct' ? 'direct' : 'officiel'
+}
+
+/**
+ * @param {string} mode 'officiel' ou 'direct'.
+ */
+exports.setModeLancement = function(mode){
+    config.settings.launcher.mwModeLancement = mode === 'direct' ? 'direct' : 'officiel'
 }
