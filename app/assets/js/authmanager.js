@@ -206,6 +206,15 @@ async function fullMicrosoftAuthFlow(entryCode, authMode) {
         }
         const mcTokenResponse = await MicrosoftAuth.getMCAccessToken(xstsResonse.data)
         if(mcTokenResponse.responseStatus === RestResponseStatus.ERROR) {
+            // MineWorld (13/11/2026) : tant que Microsoft n'a pas validé l'application (formulaire « AppID »),
+            // Minecraft répond « Invalid app registration ». On le dit clairement au joueur.
+            const corps = mcTokenResponse.error != null && mcTokenResponse.error.response != null ? mcTokenResponse.error.response.body : null
+            if(corps != null && typeof corps.errorMessage === 'string' && corps.errorMessage.includes('Invalid app registration')) {
+                return Promise.reject({
+                    title: 'Launcher pas encore autorisé',
+                    desc: 'Ton compte Microsoft est bon, mais Microsoft n\'a pas encore validé le launcher MineWorld. Réessaie dans quelques jours.'
+                })
+            }
             return Promise.reject(microsoftErrorDisplayable(mcTokenResponse.microsoftErrorCode))
         }
         const mcProfileResponse = await MicrosoftAuth.getMCProfile(mcTokenResponse.data.access_token)

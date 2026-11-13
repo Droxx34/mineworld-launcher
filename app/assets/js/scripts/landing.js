@@ -22,10 +22,17 @@ const {
     validateSelectedJvm,
     ensureJavaDirIsRoot,
     javaExecFromRoot,
-    discoverBestJvmInstallation,
     latestOpenJDK,
-    extractJdk
+    extractJdk,
+    getWin32Discoverers,
+    getDarwinDiscoverers,
+    getLinuxDiscoverers,
+    Win32RegistryJavaDiscoverer,
+    resolveJvmSettings,
+    filterApplicableJavaPaths,
+    rankApplicableJvms
 }                             = require('helios-core/java')
+const Registre                = require('winreg')
 
 // Internal Requirements
 const DiscordWrapper          = require('./assets/js/discordwrapper')
@@ -105,6 +112,15 @@ function setLaunchEnabled(val){
 
 // Bind launch button
 document.getElementById('launch_button').addEventListener('click', async e => {
+    // MineWorld : sans compte choisi, JOUER mène à la connexion Microsoft au lieu de lancer le jeu.
+    if(ConfigManager.getSelectedAccount() == null){
+        loginOptionsCancelEnabled(true)
+        loginOptionsViewOnLoginSuccess = VIEWS.landing
+        loginOptionsViewOnLoginCancel = VIEWS.loginOptions
+        loginOptionsViewOnCancel = VIEWS.landing
+        switchView(getCurrentView(), VIEWS.loginOptions)
+        return
+    }
     loggerLanding.info('Launching game..')
     try {
         const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
@@ -295,6 +311,69 @@ function showLaunchFailure(title, desc){
 /* System (Java) Scan */
 
 /**
+ * MineWorld (13/11/2026) : recherche de Java, comme discoverBestJvmInstallation de helios-core 2.3.0, mais sans son
+ * lecteur du registre Windows. Celui-ci plante quand une clé Java n'a pas de valeur « JavaHome » (TypeError dans un
+ * rappel de winreg) : la recherche ne finissait jamais et le bouton restait sur « EN COURS… ».
+ */
+function javaDuRegistre(){
+    const cles = [
+        '\\SOFTWARE\\JavaSoft\\Java Runtime Environment',
+        '\\SOFTWARE\\JavaSoft\\Java Development Kit',
+        '\\SOFTWARE\\JavaSoft\\JRE',
+        '\\SOFTWARE\\JavaSoft\\JDK'
+    ]
+    const lire = (cle) => new Promise((fini) => {
+        try {
+            new Registre({ hive: Registre.HKLM, key: cle, arch: 'x64' }).keys((err, sous) => {
+                if(err || !Array.isArray(sous) || sous.length === 0){
+                    fini([])
+                    return
+                }
+                Promise.all(sous.map(k => new Promise((r) => {
+                    try {
+                        k.get('JavaHome', (e, v) => r(!e && v != null && typeof v.value === 'string' ? v.value : null))
+                    } catch(ex) {
+                        r(null)
+                    }
+                }))).then(l => fini(l.filter(x => x != null && x.length > 0 && !x.includes('(x86)'))))
+            })
+        } catch(ex) {
+            fini([])
+        }
+    })
+    return Promise.all(cles.map(lire)).then(l => l.flat())
+}
+
+function avecDelai(promesse, ms, parDefaut){
+    return Promise.race([promesse, new Promise(r => setTimeout(() => r(parDefaut), ms))])
+}
+
+async function chercherJava(dataDir, semverRange){
+    let decouvreurs = []
+    if(process.platform === 'win32'){
+        decouvreurs = (await getWin32Discoverers(dataDir)).filter(d => !(d instanceof Win32RegistryJavaDiscoverer))
+        decouvreurs.push({ discover: javaDuRegistre })
+    } else if(process.platform === 'darwin'){
+        decouvreurs = await getDarwinDiscoverers(dataDir)
+    } else if(process.platform === 'linux'){
+        decouvreurs = await getLinuxDiscoverers(dataDir)
+    }
+    const chemins = new Set()
+    for(const d of decouvreurs){
+        try {
+            for(const c of await avecDelai(d.discover(), 20000, [])){
+                chemins.add(c)
+            }
+        } catch(err) {
+            loggerLanding.warn('Recherche de Java : une source a échoué.', err)
+        }
+    }
+    const details = filterApplicableJavaPaths(await resolveJvmSettings([...chemins]), semverRange)
+    rankApplicableJvms(details)
+    return details.length > 0 ? details[0] : null
+}
+
+/**
  * Asynchronously scan the system for valid Java installations.
  * 
  * @param {boolean} launchAfter Whether we should begin to launch after scanning. 
@@ -305,7 +384,7 @@ async function asyncSystemScan(effectiveJavaOptions, launchAfter = true){
     toggleLaunchArea(true)
     setLaunchPercentage(0, 100)
 
-    const jvmDetails = await discoverBestJvmInstallation(
+    const jvmDetails = await chercherJava(
         ConfigManager.getDataDirectory(),
         effectiveJavaOptions.supported
     )

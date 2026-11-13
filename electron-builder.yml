@@ -53,7 +53,7 @@ publish:
   owner: 'Droxx34'
   repo: 'mineworld-launcher'
   # versions d'essai tant que le launcher n'est pas fini (le launcher installé ne les prend pas pour mise à jour)
-  releaseType: 'prerelease'
+  releaseType: 'release'
 
 directories:
   buildResources: 'build'
