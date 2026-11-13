@@ -1,0 +1,41 @@
+name: Construction
+
+# (13/11/2026) MineWorld : Windows d'abord. À chaque envoi : installateur à télécharger dans « Actions ».
+# Avec une étiquette v* (ex. v1.0.0) : version publiée dans « Releases » (mise à jour automatique du launcher).
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+      - name: Dépendances
+        run: npm ci
+        shell: bash
+      - name: Installateur (sans publier)
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: npm run dist:win -- --publish never
+        shell: bash
+      - name: Installateur publié (version)
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist:win -- --publish always
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MineWorld-Launcher-Windows
+          path: dist/*.exe
+          if-no-files-found: error

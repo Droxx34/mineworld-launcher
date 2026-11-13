@@ -1,0 +1,58 @@
+appId: 'fr.mineworld.launcher'
+productName: 'MineWorld Launcher'
+artifactName: 'MineWorld-Launcher-installation-${version}.${ext}'
+
+copyright: 'Copyright © 2026 MineWorld — basé sur Helios Launcher, Copyright © 2017-2026 Daniel D. Scalzi (licence MIT)'
+
+asar: true
+compression: 'maximum'
+
+files:
+  - '!{dist,.gitignore,.vscode,docs,dev-app-update.yml,.nvmrc,eslint.config.mjs}'
+
+extraResources:
+  - 'libraries'
+
+# Windows Configuration
+win: 
+  target: 
+    - target: 'nsis'
+      arch: 'x64'
+
+# Windows Installer Configuration
+nsis:
+  shortcutName: 'MineWorld'
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+
+# macOS Configuration
+mac:
+  target:
+    - target: 'dmg'
+      arch:
+        - 'x64'
+        - 'arm64'
+  artifactName: 'MineWorld-Launcher-installation-${version}-${arch}.${ext}'
+  category: 'public.app-category.games'
+
+# Linux Configuration
+linux: 
+  target: 'AppImage'
+  maintainer: 'MineWorld'
+  vendor: 'MineWorld'
+  synopsis: 'Launcher de MineWorld'
+  description: 'Launcher du serveur MineWorld : mods, réglages et mises à jour gérés tout seuls.'
+  category: 'Game'
+
+
+# Mises à jour du launcher : versions publiées sur GitHub (dépôt public)
+publish:
+  provider: 'github'
+  owner: 'Droxx34'
+  repo: 'mineworld-launcher'
+
+directories:
+  buildResources: 'build'
+  output: 'dist'
