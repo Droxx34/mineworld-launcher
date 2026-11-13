@@ -1,0 +1,1002 @@
+/*******************************************************************************
+ * MineWorld (13/11/2026) : habillage du launcher selon la maquette v1.         *
+ * Chargé après launcher.css (Helios) : on ne touche pas au fichier d'origine.  *
+ * Police : Inter (licence SIL OFL 1.1, voir fonts/Inter-OFL.txt).              *
+ ******************************************************************************/
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter.ttf');
+    font-weight: 100 900;
+}
+
+:root {
+    --mw-haut: 36px;
+    --mw-fond: #0F1217;
+    --mw-menu: #12151B;
+    --mw-bas: #0D1014;
+    --mw-titre: #0B0D11;
+    --mw-carte: #181D24;
+    --mw-carte2: #1E242C;
+    --mw-bord: #2C343E;
+    --mw-bord-fort: #3B4654;
+    --mw-t1: #ECF0F4;
+    --mw-t2: #A0AAB6;
+    --mw-t3: #6A7480;
+    --mw-cyan: #3FD0D4;
+    --mw-cyan-fonce: #1FA5AA;
+    --mw-rose: #E85D80;
+    --mw-vert: #58D68D;
+}
+
+/* ───────────── barre de titre ───────────── */
+
+#frameBar {
+    background-color: var(--mw-titre) !important;
+    border-bottom: 1px solid #191E25;
+    box-sizing: border-box;
+    height: var(--mw-haut);
+}
+#frameMain {
+    height: calc(var(--mw-haut) - 3px);
+}
+#frameContentWin {
+    align-items: center;
+}
+#frameTitleDock {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 12px;
+}
+#frameLogo {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+}
+#frameTitleText {
+    font-family: 'Inter';
+    font-weight: 600;
+    font-size: 13.5px;
+    letter-spacing: 0;
+    color: var(--mw-t1);
+}
+#frameTitleSuite {
+    font-weight: 400;
+    color: var(--mw-t3);
+    margin-left: 3px;
+}
+#frameButtonDockWin {
+    height: var(--mw-haut);
+    top: -2px;
+}
+.frameButton {
+    height: var(--mw-haut);
+    width: 46px;
+}
+.frameButton svg rect,
+.frameButton svg polygon {
+    stroke: var(--mw-t2);
+}
+.frameButton svg rect[fill="#ffffff"],
+.frameButton svg polygon {
+    fill: var(--mw-t2);
+}
+.frameButton:hover,
+.frameButton:focus {
+    background: rgba(255, 255, 255, 0.07);
+}
+#frameButton_close:hover,
+#frameButton_close:focus {
+    background: #D9434B !important;
+}
+
+/* hauteurs qui dépendaient de l'ancienne barre de 22 px */
+html body #main {
+    height: calc(100% - var(--mw-haut));
+}
+#overlayContainer {
+    top: var(--mw-haut);
+    height: calc(100% - var(--mw-haut));
+}
+#loadingContainer {
+    height: calc(100% - var(--mw-haut));
+}
+
+/* ───────────── accueil : grille ───────────── */
+
+#landingContainer {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 84px;
+    height: 100%;
+    background: var(--mw-fond);
+    font-family: 'Inter';
+    color: var(--mw-t1);
+    -webkit-user-select: none;
+}
+#landingContainer button {
+    font-family: 'Inter';
+    outline: none;
+}
+#landingContainer h1,
+#landingContainer h2,
+#landingContainer h3,
+#landingContainer p {
+    margin: 0;
+}
+
+/* ───────────── menu de gauche ───────────── */
+
+#mwMenu {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px 12px 14px;
+    background: var(--mw-menu);
+    border-right: 1px solid var(--mw-bord);
+    min-height: 0;
+}
+#mwNav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.mwNavItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 40px;
+    padding: 0 14px 0 16px;
+    border: none;
+    border-radius: 10px;
+    background: none;
+    color: var(--mw-t2);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.mwNavItem:hover,
+.mwNavItem:focus-visible {
+    background: rgba(255, 255, 255, 0.045);
+    color: var(--mw-t1);
+}
+.mwNavItem[actif] {
+    background: rgba(63, 208, 212, 0.13);
+    color: var(--mw-t1);
+    font-weight: 600;
+}
+.mwNavItem[actif]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--mw-cyan);
+}
+.mwNavItem svg {
+    width: 19px;
+    height: 19px;
+    flex: none;
+    fill: currentColor;
+}
+.mwNavItem[actif] svg {
+    color: var(--mw-cyan);
+}
+svg.mwTrait {
+    fill: none !important;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+svg.mwTrait .mwPlein {
+    fill: currentColor;
+    stroke: none;
+}
+.mwPastille {
+    width: 8px;
+    height: 8px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--mw-rose);
+}
+.mwPastille[hidden] {
+    display: none;
+}
+
+/* nouvelle version du launcher prête (attribut « update » posé par uicore.js) */
+#image_seal_container {
+    display: none;
+    height: auto;
+    width: auto;
+    margin: 0;
+    border-radius: 10px;
+}
+#image_seal_container[update] {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(63, 208, 212, 0.45);
+    background: rgba(63, 208, 212, 0.1);
+    color: var(--mw-cyan);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+#image_seal_container[update]::before,
+#image_seal_container[update]::after {
+    display: none;
+}
+#image_seal_container svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+}
+
+/* carte du compte */
+#mwCompte {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 70px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: var(--mw-carte);
+    border: 1px solid var(--mw-bord);
+    transition: border-color 0.15s ease;
+}
+#mwCompte:hover {
+    border-color: var(--mw-bord-fort);
+}
+#avatarContainer {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: none;
+    background-color: var(--mw-carte2);
+    background-size: cover;
+    image-rendering: pixelated;
+}
+#mwCompteTexte {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+#user_text {
+    position: static;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-shadow: none;
+    text-align: left;
+    color: var(--mw-t1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mwBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: fit-content;
+    height: 18px;
+    padding: 0 8px 0 5px;
+    border-radius: 9px;
+    font-size: 10.5px;
+    font-weight: 600;
+}
+.mwBadge svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 2.6;
+}
+.mwVert {
+    background: rgba(88, 214, 141, 0.16);
+    color: var(--mw-vert);
+}
+#mwCompteAucun {
+    font-size: 11.5px;
+    color: var(--mw-t3);
+}
+#mwCompte:not([connecte]) #mwCompteBadge,
+#mwCompte[connecte] #mwCompteAucun {
+    display: none;
+}
+#avatarOverlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: none;
+    font-size: 0;
+    opacity: 0;
+}
+#avatarOverlay:active {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* ───────────── contenu ───────────── */
+
+#mwContenu {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 22px 24px 22px;
+}
+#mwContenu::-webkit-scrollbar {
+    width: 10px;
+}
+#mwContenu::-webkit-scrollbar-thumb {
+    background: #2A323C;
+    border-radius: 5px;
+    border: 3px solid var(--mw-fond);
+}
+.mwPage[hidden] {
+    display: none;
+}
+
+/* bannière */
+#mwBanniere {
+    position: relative;
+    height: clamp(220px, 40vh, 330px);
+    border-radius: 18px;
+    overflow: hidden;
+    background: #11161C;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+#mwBanniereImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+#mwBanniereVoile {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(8, 10, 14, 0) 32%, rgba(8, 10, 14, 0.5) 58%, rgba(8, 10, 14, 0.93) 100%);
+}
+#mwBanniereTexte {
+    position: absolute;
+    left: 28px;
+    right: 220px;
+    bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+#mwBanniereTitre {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+#mwBanniereResume {
+    max-width: 680px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #DCE2E8;
+}
+#mwBanniereVoir {
+    position: absolute;
+    right: 28px;
+    bottom: 40px;
+    height: 36px;
+    padding: 0 22px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+#mwBanniereVoir:hover,
+#mwBanniereVoir:focus-visible {
+    background: rgba(255, 255, 255, 0.27);
+}
+#mwBanniereVoir[hidden],
+#mwBanniereBadge[hidden] {
+    display: none;
+}
+#mwBannierePoints {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.mwPoint {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+}
+.mwPoint[actif] {
+    background: #fff;
+}
+.mwEntree #mwBanniereImage {
+    animation: mwApparait 0.7s ease;
+}
+.mwEntree #mwBanniereTexte {
+    animation: mwMonte 0.5s ease;
+}
+@keyframes mwApparait {
+    from { opacity: 0.35; transform: scale(1.03); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes mwMonte {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* étiquettes « ÉVÉNEMENT · … » / « INFO · … » */
+.mwEtiquette {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 12px;
+    border-radius: 12px;
+    background: var(--mw-cyan-fonce);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.mwEtiquette[genre="evenement"] {
+    background: var(--mw-rose);
+}
+
+/* deux colonnes sous la bannière */
+#mwDeuxColonnes {
+    display: grid;
+    grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+    gap: 24px;
+    margin-top: 24px;
+}
+.mwEntete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 22px;
+    margin-bottom: 12px;
+}
+.mwEntete h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--mw-t1);
+}
+.mwEntete.mwGrand {
+    height: auto;
+    margin: 4px 0 14px;
+}
+.mwEntete.mwGrand h2 {
+    font-size: 22px;
+    font-weight: 700;
+}
+.mwLien {
+    padding: 4px 0;
+    border: none;
+    background: none;
+    color: var(--mw-cyan);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mwLien:hover {
+    text-decoration: underline;
+}
+
+/* mises à jour */
+.mwMaj {
+    display: flex;
+    gap: 14px;
+    min-height: 62px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: var(--mw-carte);
+    border: 1px solid var(--mw-bord);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.mwMajCouleur {
+    flex: none;
+    width: 6px;
+    min-height: 34px;
+    border-radius: 3px;
+}
+.mwMajCorps {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+}
+.mwMajHaut {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
+.mwMajTitre {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mw-t1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mwMajVersion {
+    flex: none;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--mw-t3);
+}
+.mwMajTexte {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--mw-t2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mwMajTexte.mwComplet {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+.mwDate {
+    font-size: 11px;
+    color: var(--mw-t3);
+}
+
+/* à venir */
+#mwAvenir {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.mwCarteAvenir {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--mw-bord);
+    background: var(--mw-carte);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.mwCarteAvenir:hover,
+.mwCarteAvenir:focus-visible {
+    border-color: var(--mw-bord-fort);
+    transform: translateY(-1px);
+}
+.mwCarteImage,
+.mwArticleImage {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1B3644 0%, #2F2846 100%);
+}
+.mwCarteImage {
+    height: 140px;
+}
+.mwCarteImage img,
+.mwArticleImage img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.mwCarteImage[vide]::after,
+.mwArticleImage[vide]::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 34px;
+    height: 34px;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.3);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2.8l2.75 5.86 6.35.78-4.68 4.38 1.22 6.3L12 17.02l-5.64 3.1 1.22-6.3L2.9 9.44l6.35-.78z'/></svg>") center / contain no-repeat;
+}
+.mwCarteTexte {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px 14px;
+}
+.mwCarteTitre {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mw-t1);
+}
+.mwCarteQuand {
+    font-size: 12px;
+    color: var(--mw-t2);
+}
+.mwVide {
+    grid-column: 1 / -1;
+    padding: 22px 16px;
+    border-radius: 12px;
+    border: 1px dashed var(--mw-bord);
+    color: var(--mw-t3);
+    font-size: 13px;
+    text-align: center;
+}
+
+/* pages Actualités et Événements */
+.mwListe {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+.mwListe .mwMaj {
+    margin-bottom: 0;
+}
+.mwArticle {
+    display: flex;
+    gap: 18px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--mw-bord);
+    background: var(--mw-carte);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.mwArticle[vise],
+.mwMaj[vise] {
+    border-color: var(--mw-cyan);
+    box-shadow: 0 0 0 3px rgba(63, 208, 212, 0.18);
+}
+.mwArticleImage {
+    flex: none;
+    width: 280px;
+    height: 158px;
+    border-radius: 10px;
+}
+.mwArticleTexte {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    padding-top: 2px;
+}
+.mwArticleTexte h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--mw-t1);
+}
+.mwArticleTexte p {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #C6CED8;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    -webkit-user-select: text;
+}
+
+/* ───────────── barre du bas ───────────── */
+
+#mwBarre {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 0 30px 0 26px;
+    background: var(--mw-bas);
+    border-top: 1px solid var(--mw-bord);
+}
+#server_status_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+    width: 190px;
+}
+#mwPointServeur {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--mw-t3);
+}
+#server_status_wrapper[enligne] #mwPointServeur {
+    background: var(--mw-vert);
+    box-shadow: 0 0 0 4px rgba(88, 214, 141, 0.15);
+}
+.mwDeuxLignes {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+#landingPlayerLabel,
+#mwEtatTitre {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mw-t1);
+    white-space: nowrap;
+}
+#player_count,
+#mwEtatDetail {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--mw-t2);
+    text-shadow: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#mwMilieu {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+#mwEtatMod {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+.mwRond {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+.mwRond svg {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2.6;
+}
+
+/* progression (téléchargement et lancement) */
+#launch_details {
+    top: 0;
+    display: none;
+    flex-direction: column;
+    gap: 9px;
+    width: 100%;
+    max-width: 400px;
+}
+#mwChargeHaut {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+#launch_details_text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mw-t1);
+}
+#launch_progress_label {
+    min-width: 0;
+    max-width: none;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--mw-t2);
+}
+#launch_progress[value] {
+    width: 100%;
+    height: 8px;
+    border: none;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--mw-carte2);
+}
+#launch_progress[value]::-webkit-progress-bar {
+    background-color: var(--mw-carte2);
+    border-radius: 4px;
+}
+#launch_progress[value]::-webkit-progress-value {
+    background-color: var(--mw-cyan);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* bouton JOUER */
+#launch_content {
+    display: flex;
+    flex: none;
+}
+#launch_button {
+    width: 230px;
+    height: 58px;
+    border-radius: 14px;
+    background: linear-gradient(to bottom, #3DCBD0 0%, #33BFC4 50%, #24B0B6 50%, #22A8AE 100%);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-shadow: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+#launch_button:hover,
+#launch_button:focus-visible {
+    text-shadow: none;
+    filter: brightness(1.08);
+}
+#launch_button:active {
+    color: #fff;
+    text-shadow: none;
+    transform: translateY(1px);
+}
+#launch_button:disabled,
+#launch_button[encours] {
+    background: #28323A;
+    color: #82969F;
+    box-shadow: none;
+    filter: none;
+    cursor: default;
+    pointer-events: none;
+}
+#launch_button[encours] {
+    font-size: 18px;
+}
+.mwEnCours,
+#launch_button[encours] .mwJouer {
+    display: none;
+}
+#launch_button[encours] .mwEnCours {
+    display: inline;
+}
+
+/* ───────────── accueil (première ouverture) et choix de connexion ───────────── */
+
+#welcomeContainer,
+#loginOptionsContainer {
+    background: rgba(8, 10, 14, 0.62);
+    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(9px);
+    font-family: 'Inter';
+}
+#welcomeContent,
+#loginOptionsContent {
+    top: 0;
+    box-sizing: border-box;
+    width: 480px;
+    padding: 34px 40px 30px;
+    border-radius: 22px;
+    background: rgba(20, 24, 30, 0.96);
+    border: 1px solid var(--mw-bord);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+}
+#welcomeImageSeal {
+    width: 64px;
+    height: 64px;
+    margin: 0 0 18px;
+    border: none;
+    border-radius: 14px;
+    box-shadow: none;
+    background: none;
+}
+#welcomeHeader {
+    margin-bottom: 14px;
+    font-family: 'Inter';
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-shadow: none;
+    color: var(--mw-t1);
+    text-transform: none;
+}
+#welcomeDescription,
+#welcomeDescCTA {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: center;
+    text-shadow: none;
+    color: var(--mw-t2);
+}
+#welcomeDescCTA {
+    color: var(--mw-t1);
+    font-weight: 500;
+}
+#welcomeButton {
+    right: 0;
+    margin: 22px 0 0;
+    padding: 0 26px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--mw-cyan-fonce);
+    font-family: 'Inter';
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-shadow: none;
+}
+#welcomeButton:hover,
+#welcomeButton:focus {
+    text-shadow: none;
+    filter: brightness(1.1);
+}
+#welcomeSVG {
+    width: 14px;
+    height: 14px;
+    margin-left: 12px;
+}
+.loginOptionsMainContent h2 {
+    margin: 0 0 22px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mw-t1);
+}
+.loginOptionButtonContainer {
+    width: 100%;
+    min-width: 300px;
+}
+.loginOptionButton {
+    height: 52px;
+    padding: 0 20px;
+    column-gap: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--mw-bord);
+    background: var(--mw-carte);
+    font-family: 'Inter';
+    font-size: 14px;
+    font-weight: 600;
+}
+.loginOptionButton:hover,
+.loginOptionButton:focus {
+    background: var(--mw-carte2);
+    border-color: var(--mw-bord-fort);
+    text-shadow: none;
+}
+/* les comptes Mojang n'existent plus : seulement Microsoft */
+.loginOptionButtonContainer:has(#loginOptionMojang) {
+    display: none;
+}
+#loginOptionCancelContainer {
+    position: static;
+    margin-top: 18px;
+}
+#loginOptionCancelButton {
+    font-family: 'Inter';
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mw-t2);
+}

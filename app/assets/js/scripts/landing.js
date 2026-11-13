@@ -50,12 +50,17 @@ const loggerLanding = LoggerUtil.getLogger('Landing')
  * @param {boolean} loading True if the loading area should be shown, otherwise false.
  */
 function toggleLaunchArea(loading){
+    // MineWorld : la barre de progression prend la place de « Prêt à jouer », le bouton JOUER reste visible (grisé).
+    const pret = document.getElementById('mwEtatMod')
+    const bouton = document.getElementById('launch_button')
     if(loading){
         launch_details.style.display = 'flex'
-        launch_content.style.display = 'none'
+        if(pret != null) pret.style.display = 'none'
+        bouton.setAttribute('encours', '')
     } else {
         launch_details.style.display = 'none'
-        launch_content.style.display = 'inline-flex'
+        if(pret != null) pret.style.display = 'flex'
+        bouton.removeAttribute('encours')
     }
 }
 
@@ -143,16 +148,21 @@ document.getElementById('avatarOverlay').onclick = async e => {
 
 // Bind selected account
 function updateSelectedAccount(authUser){
+    // MineWorld : tête du joueur et badge du type de compte dans la carte en bas du menu.
     let username = Lang.queryJS('landing.selectedAccount.noAccountSelected')
+    const avatar = document.getElementById('avatarContainer')
+    avatar.style.backgroundImage = ''
     if(authUser != null){
         if(authUser.displayName != null){
             username = authUser.displayName
         }
-        if(authUser.uuid != null){
-            document.getElementById('avatarContainer').style.backgroundImage = `url('https://mc-heads.net/body/${authUser.uuid}/right')`
+        if(authUser.uuid != null && /^[0-9a-fA-F-]{32,36}$/.test(authUser.uuid)){
+            avatar.style.backgroundImage = `url('https://mc-heads.net/avatar/${authUser.uuid}/64')`
         }
+        document.getElementById('mwCompteType').textContent = authUser.type === 'microsoft' ? 'Microsoft' : 'Hors ligne'
     }
-    user_text.innerHTML = username
+    document.getElementById('mwCompte').toggleAttribute('connecte', authUser != null)
+    user_text.textContent = username
 }
 updateSelectedAccount(ConfigManager.getSelectedAccount())
 
@@ -236,34 +246,25 @@ const refreshMojangStatuses = async function(){
 }
 
 const refreshServerStatus = async (fade = false) => {
+    // MineWorld : point vert ou gris, « Serveur en ligne » et le nombre de joueurs (textes posés en texte simple).
     loggerLanding.info('Refreshing Server Status')
     const serv = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
 
-    let pLabel = Lang.queryJS('landing.serverStatus.server')
-    let pVal = Lang.queryJS('landing.serverStatus.offline')
+    let enLigne = false
+    let detail = 'Réessaie dans un moment'
 
     try {
-
         const servStat = await getServerStatus(47, serv.hostname, serv.port)
-        console.log(servStat)
-        pLabel = Lang.queryJS('landing.serverStatus.players')
-        pVal = servStat.players.online + '/' + servStat.players.max
-
+        enLigne = true
+        const n = servStat.players.online
+        detail = n === 0 ? 'Personne pour l\'instant' : (n === 1 ? '1 joueur connecté' : n + ' joueurs connectés')
     } catch (err) {
         loggerLanding.warn('Unable to refresh server status, assuming offline.')
         loggerLanding.debug(err)
     }
-    if(fade){
-        $('#server_status_wrapper').fadeOut(250, () => {
-            document.getElementById('landingPlayerLabel').innerHTML = pLabel
-            document.getElementById('player_count').innerHTML = pVal
-            $('#server_status_wrapper').fadeIn(500)
-        })
-    } else {
-        document.getElementById('landingPlayerLabel').innerHTML = pLabel
-        document.getElementById('player_count').innerHTML = pVal
-    }
-    
+    document.getElementById('server_status_wrapper').toggleAttribute('enligne', enLigne)
+    document.getElementById('landingPlayerLabel').textContent = enLigne ? 'Serveur en ligne' : 'Serveur hors ligne'
+    document.getElementById('player_count').textContent = detail
 }
 
 refreshMojangStatuses()
@@ -920,11 +921,7 @@ document.addEventListener('keydown', (e) => {
         //     document.getElementById('newsButton').click()
         // }
     } else {
-        if(getCurrentView() === VIEWS.landing){
-            if(e.key === 'ArrowUp'){
-                document.getElementById('newsButton').click()
-            }
-        }
+        // MineWorld : plus de panneau d'actualités qui glisse (les actualités ont leur page dans le menu).
     }
 })
 

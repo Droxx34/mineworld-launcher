@@ -15,6 +15,6 @@ sourceGithubLink = "https://github.com/Droxx34/mineworld-launcher"
 supportLink = "https://github.com/Droxx34/mineworld-launcher/issues"
 
 [ejs.welcome]
-welcomeHeader = "BIENVENUE SUR MINEWORLD"
+welcomeHeader = "Bienvenue sur MineWorld"
 welcomeDescription = "MineWorld est une ville à vivre : un logement, un métier, un téléphone, des amis. Le launcher s'occupe de tout : il installe le jeu et le mod MineWorld, les garde à jour et t'emmène directement sur le serveur."
-welcomeDescCTA = "Encore deux étapes : ton compte Microsoft, puis ton compte MineWorld."
+welcomeDescCTA = "Pour commencer, connecte le compte Microsoft qui possède Minecraft."

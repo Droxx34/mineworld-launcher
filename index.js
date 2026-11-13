@@ -225,8 +225,10 @@ let win
 function createWindow() {
 
     win = new BrowserWindow({
-        width: 980,
-        height: 552,
+        width: 1180,
+        height: 720,
+        minWidth: 1000,
+        minHeight: 640,
         icon: getPlatformIcon('SealCircle'),
         frame: false,
         webPreferences: {
@@ -234,7 +236,7 @@ function createWindow() {
             nodeIntegration: true,
             contextIsolation: false
         },
-        backgroundColor: '#171614'
+        backgroundColor: '#0F1217'
     })
     remoteMain.enable(win.webContents)
 
