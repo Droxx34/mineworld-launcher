@@ -1,11 +1,10 @@
 name: Construction
 
-# (13/11/2026) MineWorld : Windows d'abord. À chaque envoi : installateur à télécharger dans « Actions ».
-# Avec une étiquette v* (ex. v1.0.0) : version publiée dans « Releases » (mise à jour automatique du launcher).
+# (13/11/2026) MineWorld : Windows d'abord. À chaque envoi sur main, l'installateur est publié dans « Releases »
+# sous la version de package.json (v0.1.0…) : changer la version pour publier une nouvelle version du launcher.
+# Les envois sur une autre branche fabriquent seulement l'installateur (à télécharger dans « Actions »).
 on:
   push:
-    branches: [main]
-    tags: ['v*']
   workflow_dispatch:
 
 jobs:
@@ -25,11 +24,11 @@ jobs:
         run: npm ci
         shell: bash
       - name: Installateur (sans publier)
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ github.ref != 'refs/heads/main' }}
         run: npm run dist:win -- --publish never
         shell: bash
-      - name: Installateur publié (version)
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      - name: Installateur publié (version de package.json)
+        if: ${{ github.ref == 'refs/heads/main' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run dist:win -- --publish always
