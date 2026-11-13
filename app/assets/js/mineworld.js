@@ -3,7 +3,7 @@
  * ADRESSE : le nom de domaine de MineWorld (il pointe vers le serveur ; à changer seulement là-bas le jour du VPS).
  * Le plugin MineWorld sert la liste des fichiers, le mod signé et les actualités sur le port 12347.
  */
-exports.ADRESSE = 'mineworld.me'   // domaine acheté par Jonathan le 13/11/2026
+exports.ADRESSE = 'mineworld.me'   // (13/11/2026) nom de domaine de MineWorld
 exports.PORT_JEU = 12345
 exports.PORT_LAUNCHER = 12347
 
