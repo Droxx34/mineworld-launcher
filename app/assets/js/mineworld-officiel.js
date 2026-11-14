@@ -49,11 +49,72 @@ function md5(buf){
 }
 
 async function md5Fichier(p){
-    try {
-        return md5(await fs.readFile(p))
-    } catch(e) {
-        return null
+    // lu en flux : les packs de textures pèsent plusieurs centaines de Mo
+    return new Promise((fini) => {
+        const h = crypto.createHash('md5')
+        const flux = require('fs').createReadStream(p)
+        flux.on('error', () => fini(null))
+        flux.on('data', (d) => h.update(d))
+        flux.on('end', () => fini(h.digest('hex')))
+    })
+}
+
+/** Télécharge un gros fichier en flux vers cible (fichier temporaire, empreinte vérifiée, puis renommage). */
+function telechargerVers(url, cible, md5Attendu, avance){
+    return new Promise((fini, echec) => {
+        const tmp = cible + '.mw-part'
+        const h = crypto.createHash('md5')
+        const sortie = require('fs').createWriteStream(tmp)
+        const flux = got.stream(url, { timeout: { request: 30 * 60 * 1000 }, retry: 1 })
+        flux.on('downloadProgress', (p) => { if(avance && p.percent != null) avance(p.percent) })
+        flux.on('data', (d) => h.update(d))
+        flux.on('error', (e) => { sortie.destroy(); fs.remove(tmp).finally(() => echec(e)) })
+        sortie.on('error', (e) => { flux.destroy(); echec(e) })
+        sortie.on('finish', async () => {
+            try {
+                if(md5Attendu && h.digest('hex') !== md5Attendu){
+                    await fs.remove(tmp)
+                    echec(new Error('Pack de textures abîmé (empreinte).'))
+                    return
+                }
+                await fs.move(tmp, cible, { overwrite: true })
+                fini()
+            } catch(e) {
+                echec(e)
+            }
+        })
+        flux.pipe(sortie)
+    })
+}
+
+/**
+ * Active les packs dans options.txt du profil MineWorld, une seule fois par pack : si le joueur le retire ensuite dans
+ * le jeu, on ne le remet pas (liste gardée dans .mineworld-packs.json).
+ */
+async function activerPacks(jeu, noms){
+    const marque = path.join(jeu, '.mineworld-packs.json')
+    let deja = []
+    try { deja = JSON.parse(await fs.readFile(marque, 'utf8')) } catch(e) { deja = [] }
+    if(!Array.isArray(deja)) deja = []
+    const nouveaux = noms.filter(n => !deja.includes(n))
+    if(nouveaux.length === 0) return
+    const options = path.join(jeu, 'options.txt')
+    let lignes = []
+    try { lignes = (await fs.readFile(options, 'utf8')).split(/\r?\n/) } catch(e) { lignes = [] }
+    let i = lignes.findIndex(l => l.startsWith('resourcePacks:'))
+    let liste = ['vanilla']
+    if(i >= 0){
+        try { liste = JSON.parse(lignes[i].slice('resourcePacks:'.length)) } catch(e) { liste = ['vanilla'] }
+        if(!Array.isArray(liste)) liste = ['vanilla']
     }
+    for(const n of nouveaux){
+        if(!liste.includes('file/' + n)) liste.push('file/' + n)
+    }
+    const ligne = 'resourcePacks:' + JSON.stringify(liste)
+    if(i >= 0) lignes[i] = ligne
+    else lignes.unshift(ligne)
+    await ecrireSiChange(options, lignes.join('\n').replace(/\n*$/, '\n'))
+    await fs.writeFile(marque, JSON.stringify(deja.concat(nouveaux)))
 }
 
 async function telecharger(url){
@@ -219,7 +280,24 @@ async function preparer(serveur, o){
         }
     }
 
-    // 3. profil
+    // 3. packs de textures (modules « File » rangés dans resourcepacks/), téléchargés une fois puis activés
+    const packs = modules.filter(m => m.type === 'File' && m.artifact && typeof m.artifact.path === 'string'
+        && /^resourcepacks\/[A-Za-z0-9._-]{1,80}\.zip$/.test(m.artifact.path) && /^https:\/\//.test(m.artifact.url || ''))
+    const nomsPacks = []
+    for(const m of packs){
+        const cible = path.join(jeu, m.artifact.path)
+        await fs.ensureDir(path.dirname(cible))
+        if(!m.artifact.MD5 || await md5Fichier(cible) !== m.artifact.MD5){
+            const taille = m.artifact.size ? ' (' + Math.round(m.artifact.size / 1048576) + ' Mo)' : ''
+            prog(86, 'Textures : ' + (m.name || 'pack') + taille + '…')
+            await telechargerVers(m.artifact.url, cible, m.artifact.MD5,
+                (f) => prog(86, 'Textures : ' + (m.name || 'pack') + ' ' + Math.round(f * 100) + ' %'))
+        }
+        nomsPacks.push(path.basename(m.artifact.path))
+    }
+    if(nomsPacks.length > 0) await activerPacks(jeu, nomsPacks)
+
+    // 4. profil
     prog(90, 'Profil MineWorld…')
     const voulu = profilVoulu(serveur, mc, o.ram, o.icone)
     let profil = 'a-jour'
@@ -287,4 +365,9 @@ async function ouvrirLauncher(){
     return true
 }
 
-module.exports = { dossierMinecraft, fichiersProfils, preparer, launcherOuvert, ouvrirLauncher, signatureValide, CLE_PROFIL }
+/** Crédits des packs (licence CC BY : afficher l'auteur). */
+function credits(serveur){
+    return (Array.isArray(serveur.modules) ? serveur.modules : []).filter(m => typeof m.credit === 'string').map(m => m.credit)
+}
+
+module.exports = { dossierMinecraft, fichiersProfils, preparer, launcherOuvert, ouvrirLauncher, signatureValide, credits, CLE_PROFIL }

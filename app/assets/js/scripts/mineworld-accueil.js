@@ -329,6 +329,15 @@
             c.toggleAttribute('choisi', c.getAttribute('data-mode') === mode)
         }
         document.getElementById('mwCheminJeu').textContent = cheminMW.join(Officiel.dossierMinecraft(), 'mineworld')
+        // crédits demandés par les licences (packs de textures CC BY, Helios en MIT)
+        DistroAPI.getDistribution().then(d => {
+            const serv = d.getServerById(ConfigManager.getSelectedServer()) || d.getMainServer()
+            const boite = document.getElementById('mwCredits')
+            boite.replaceChildren()
+            for(const c of Officiel.credits(serv.rawServer).concat(['Launcher basé sur Helios Launcher (licence MIT).'])){
+                boite.appendChild(el('div', null, c))
+            }
+        }).catch(() => {})
     }
 
     for(const c of document.querySelectorAll('#mwPage_parametres .mwChoix')){
