@@ -97,7 +97,12 @@ async function activerPacks(jeu, noms){
     try { deja = JSON.parse(await fs.readFile(marque, 'utf8')) } catch(e) { deja = [] }
     if(!Array.isArray(deja)) deja = []
     const nouveaux = noms.filter(n => !deja.includes(n))
-    if(nouveaux.length === 0) return
+    // packs que nous avions installés et que le serveur ne demande plus : fichier supprimé, retiré des options
+    const anciens = deja.filter(n => !noms.includes(n) && /^[A-Za-z0-9._-]{1,80}\.zip$/.test(n))
+    for(const n of anciens){
+        await fs.remove(path.join(jeu, 'resourcepacks', n))
+    }
+    if(nouveaux.length === 0 && anciens.length === 0) return
     const options = path.join(jeu, 'options.txt')
     let lignes = []
     try { lignes = (await fs.readFile(options, 'utf8')).split(/\r?\n/) } catch(e) { lignes = [] }
@@ -107,6 +112,7 @@ async function activerPacks(jeu, noms){
         try { liste = JSON.parse(lignes[i].slice('resourcePacks:'.length)) } catch(e) { liste = ['vanilla'] }
         if(!Array.isArray(liste)) liste = ['vanilla']
     }
+    liste = liste.filter(x => !anciens.some(n => x === 'file/' + n))
     for(const n of nouveaux){
         if(!liste.includes('file/' + n)) liste.push('file/' + n)
     }
@@ -114,7 +120,7 @@ async function activerPacks(jeu, noms){
     if(i >= 0) lignes[i] = ligne
     else lignes.unshift(ligne)
     await ecrireSiChange(options, lignes.join('\n').replace(/\n*$/, '\n'))
-    await fs.writeFile(marque, JSON.stringify(deja.concat(nouveaux)))
+    await fs.writeFile(marque, JSON.stringify(deja.filter(n => !anciens.includes(n)).concat(nouveaux)))
 }
 
 async function telecharger(url){
@@ -295,7 +301,7 @@ async function preparer(serveur, o){
         }
         nomsPacks.push(path.basename(m.artifact.path))
     }
-    if(nomsPacks.length > 0) await activerPacks(jeu, nomsPacks)
+    await activerPacks(jeu, nomsPacks)
 
     // 4. profil
     prog(90, 'Profil MineWorld…')
