@@ -1,16 +1,13 @@
 <div id="loginOptionsContainer" style="display: none;">
     <div id="loginOptionsContent">
         <div class="loginOptionsMainContent">
-            <h2><%- lang('loginOptions.loginOptionsTitle') %></h2>
+            <img class="mwLogoConnexion" src="assets/images/mineworld/logo_mw.png" alt="" draggable="false">
+            <h2>Bienvenue en ville</h2>
+            <p class="mwTexteConnexion">Connecte-toi avec ton compte Microsoft pour entrer dans MineWorld. Il te faut Minecraft Java Edition.</p>
             <div class="loginOptionActions">
                 <div class="loginOptionButtonContainer">
                     <button id="loginOptionMicrosoft" class="loginOptionButton">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23">
-                            <path fill="#f35325" d="M1 1h10v10H1z" />
-                            <path fill="#81bc06" d="M12 1h10v10H12z" />
-                            <path fill="#05a6f0" d="M1 12h10v10H1z" />
-                            <path fill="#ffba08" d="M12 12h10v10H12z" />
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="12" r="3.6"/><path d="M11.6 12H20M17 12v3M20 12v2.4"/></svg>
                         <span><%- lang('loginOptions.loginWithMicrosoft') %></span>
                     </button>
                 </div>
@@ -25,6 +22,8 @@
                     </button>
                 </div>
             </div>
+            <div class="mwEtapesConnexion"><span>1 · Connexion</span><span>2 · Téléchargement</span><span>3 · En ville !</span></div>
+            <p class="mwPetitConnexion">Ton mot de passe n'est jamais vu par MineWorld : la connexion se fait chez Microsoft.</p>
             <div id="loginOptionCancelContainer" style="display: none;">
                 <button id="loginOptionCancelButton"><%- lang('loginOptions.cancelButton') %></button>
             </div>

@@ -1,47 +1,54 @@
-<%# MineWorld (13/11/2026) : écran d'accueil refait selon la maquette v1 (menu à gauche, bannière d'événements,
-    mises à jour, « À venir », barre du bas avec JOUER). Les identifiants utilisés par landing.js sont gardés. %>
+<%# MineWorld (17/11/2026) : écran d'accueil v2 « ville de nuit, néons » (maquette validée par Jonathan) : menu d'icônes à
+    gauche, entête avec le logo MW et le compte, bannière + avis de la police + « La ville recrute », pages Actualités,
+    Événements et Paramètres (onglets), barre du bas avec JOUER. Les identifiants utilisés par landing.js sont gardés. %>
 <div id="landingContainer" style="display: none;">
     <aside id="mwMenu">
         <nav id="mwNav">
-            <button class="mwNavItem" data-page="accueil" actif>
-                <svg viewBox="0 0 24 24"><path d="M12 3.2 2.6 11h2.6v9.2h5.2v-5.6h3.2v5.6h5.2V11h2.6z"/></svg>
+            <button class="mwNavItem" data-page="accueil" title="Accueil" actif>
+                <svg viewBox="0 0 24 24" class="mwTrait"><path d="M3.5 11.2L12 4l8.5 7.2M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg>
                 <span>Accueil</span>
             </button>
-            <button class="mwNavItem" data-page="actualites">
+            <button class="mwNavItem" data-page="actualites" title="Actualités">
                 <svg viewBox="0 0 24 24" class="mwTrait"><rect x="3.5" y="4.5" width="17" height="15" rx="2.4"/><path d="M7.5 9.2h9M7.5 12.4h9M7.5 15.6h5.6"/></svg>
                 <span>Actualités</span>
                 <i class="mwPastille" id="mwPastilleActus" hidden></i>
             </button>
-            <button class="mwNavItem" data-page="evenements">
-                <svg viewBox="0 0 24 24"><path d="M12 2.8l2.75 5.86 6.35.78-4.68 4.38 1.22 6.3L12 17.02l-5.64 3.1 1.22-6.3L2.9 9.44l6.35-.78z"/></svg>
+            <button class="mwNavItem" data-page="evenements" title="Événements">
+                <svg viewBox="0 0 24 24" class="mwTrait"><rect x="3.5" y="5.5" width="17" height="15" rx="2.4"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/></svg>
                 <span>Événements</span>
-            </button>
-            <button class="mwNavItem" data-page="parametres">
-                <svg viewBox="0 0 24 24" class="mwTrait"><circle cx="12" cy="12" r="5.6"/><circle cx="12" cy="12" r="1.9" class="mwPlein"/><path d="M12 2.6v3M12 18.4v3M2.6 12h3M18.4 12h3M5.35 5.35l2.12 2.12M16.53 16.53l2.12 2.12M5.35 18.65l2.12-2.12M16.53 7.47l2.12-2.12"/></svg>
-                <span><%- lang('landing.settingsTooltip') %></span>
             </button>
         </nav>
         <%# uicore.js pose l'attribut « update » quand une nouvelle version du launcher est prête : le bouton apparaît. %>
         <button id="image_seal_container" title="<%- lang('landing.updateAvailableTooltip') %>">
             <svg viewBox="0 0 24 24" class="mwTrait"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg>
-            <span>Nouvelle version prête</span>
         </button>
-        <div id="mwCompte">
-            <div id="avatarContainer"></div>
-            <div id="mwCompteTexte">
-                <span id="user_text"><%- lang('landing.usernamePlaceholder') %></span>
-                <span id="mwCompteBadge" class="mwBadge mwVert">
-                    <svg viewBox="0 0 24 24" class="mwTrait"><path d="M5 12.5l4.4 4.4L19 7.4"/></svg>
-                    <span id="mwCompteType">Microsoft</span>
-                </span>
-                <span id="mwCompteAucun">Connexion requise</span>
-                <span id="mwCompteOfficiel">Launcher officiel</span>
-            </div>
-            <button id="avatarOverlay" title="Gérer le compte"><%- lang('landing.usernameEditButton') %></button>
-        </div>
+        <button class="mwNavItem mwNavBas" data-page="parametres" title="<%- lang('landing.settingsTooltip') %>">
+            <svg viewBox="0 0 24 24" class="mwTrait"><circle cx="12" cy="12" r="5.6"/><circle cx="12" cy="12" r="1.9"/><path d="M12 2.6v3M12 18.4v3M2.6 12h3M18.4 12h3M5.35 5.35l2.12 2.12M16.53 16.53l2.12 2.12M5.35 18.65l2.12-2.12M16.53 7.47l2.12-2.12"/></svg>
+            <span><%- lang('landing.settingsTooltip') %></span>
+        </button>
     </aside>
 
     <main id="mwContenu">
+        <header id="mwEntetePrincipale">
+            <div id="mwLogo">
+                <img src="assets/images/mineworld/logo_mw.png" alt="" draggable="false">
+                <div>
+                    <div id="mwMot">MINEWORLD</div>
+                    <div id="mwDevise">LA VILLE <b>·</b> TES MÉTIERS <b>·</b> TES RÈGLES</div>
+                </div>
+            </div>
+            <div id="mwCompte">
+                <div id="avatarContainer"></div>
+                <div id="mwCompteTexte">
+                    <span id="user_text"><%- lang('landing.usernamePlaceholder') %></span>
+                    <span id="mwCompteBadge" class="mwBadge mwVert"><i></i><span>Compte <span id="mwCompteType">Microsoft</span></span></span>
+                    <span id="mwCompteAucun">Connexion requise</span>
+                    <span id="mwCompteOfficiel">Launcher officiel</span>
+                </div>
+                <button id="avatarOverlay" title="Gérer le compte"><%- lang('landing.usernameEditButton') %></button>
+            </div>
+        </header>
+
         <!-- Accueil -->
         <section class="mwPage" id="mwPage_accueil">
             <div id="mwBanniere">
@@ -52,72 +59,130 @@
                     <h1 id="mwBanniereTitre">Bienvenue sur MineWorld</h1>
                     <p id="mwBanniereResume">Les actualités du serveur apparaîtront ici.</p>
                 </div>
-                <button id="mwBanniereVoir">En savoir plus</button>
-                <div id="mwBannierePoints"></div>
-            </div>
-            <div id="mwDeuxColonnes">
-                <div id="mwBlocMajs">
-                    <div class="mwEntete">
-                        <h2>Dernières mises à jour</h2>
-                        <button class="mwLien" data-aller="actualites">Tout voir</button>
-                    </div>
-                    <div id="mwMajs"></div>
+                <div id="mwBanniereBas">
+                    <button id="mwBanniereVoir">En savoir plus</button>
+                    <div id="mwBannierePoints"></div>
                 </div>
-                <div id="mwBlocAvenir">
-                    <div class="mwEntete">
-                        <h2>À venir</h2>
-                        <button class="mwLien" data-aller="evenements">Tout voir</button>
+            </div>
+            <div id="mwColonne">
+                <div class="mwCarte" id="mwAvis" hidden>
+                    <div class="mwGyro"></div><div class="mwGyro mwBleu"></div>
+                    <div id="mwAffiche">
+                        <b>RECHERCHÉ</b>
+                        <svg viewBox="0 0 10 10" shape-rendering="crispEdges"><path fill="#2A2018" d="M2 1h6v1H2zM1 2h8v5H1zM2 7h6v1H2zM3 8h4v1H3z"/><path fill="#E9D9B0" d="M2 3h2v1H2zM6 3h2v1H6z"/><path fill="#3A2410" d="M0 9h10v1H0z"/></svg>
+                        <span id="mwAvisPrime"></span>
                     </div>
-                    <div id="mwAvenir"></div>
+                    <div class="mwAvisTexte">
+                        <div class="mwSurTitre">AVIS DE LA POLICE</div>
+                        <div id="mwAvisTitre"></div>
+                        <div id="mwAvisResume"></div>
+                    </div>
+                </div>
+                <div class="mwCarte" id="mwRecrute">
+                    <div class="mwCarteEntete"><span>LA VILLE RECRUTE</span></div>
+                    <div id="mwMetiers"></div>
                 </div>
             </div>
         </section>
-        <!-- Toutes les actualités -->
+
+        <!-- Actualités -->
         <section class="mwPage" id="mwPage_actualites" hidden>
-            <div class="mwEntete mwGrand"><h2>Actualités</h2></div>
-            <div class="mwListe" id="mwListeActus"></div>
-            <div class="mwEntete mwGrand"><h2>Mises à jour</h2></div>
-            <div class="mwListe" id="mwListeMajs"></div>
+            <div class="mwTitrePage">
+                <h2>Actualités<small>Ce qui bouge en ville et sur le serveur</small></h2>
+                <div class="mwPuces" id="mwFiltresActus">
+                    <button class="mwPuce" data-filtre="tout" actif>Tout</button>
+                    <button class="mwPuce" data-filtre="maj">Mises à jour</button>
+                    <button class="mwPuce" data-filtre="info">Ville</button>
+                    <button class="mwPuce" data-filtre="police">Police</button>
+                </div>
+            </div>
+            <div id="mwGrilleActus">
+                <div id="mwUne"></div>
+                <div class="mwListe" id="mwListeActus"></div>
+            </div>
         </section>
+
         <!-- Événements -->
         <section class="mwPage" id="mwPage_evenements" hidden>
-            <div class="mwEntete mwGrand"><h2>Événements</h2></div>
-            <div class="mwListe" id="mwListeEvenements"></div>
+            <div class="mwTitrePage">
+                <h2>Événements<small>Ne rate rien de ce qui se passe en ville</small></h2>
+            </div>
+            <div id="mwListeEvenements"></div>
         </section>
+
         <!-- Paramètres MineWorld (les réglages d'origine restent dans « Réglages avancés ») -->
         <section class="mwPage" id="mwPage_parametres" hidden>
-            <div class="mwEntete mwGrand"><h2>Paramètres</h2></div>
-            <h3 class="mwSousTitre">Lancement du jeu</h3>
-            <button class="mwChoix" data-mode="officiel">
-                <i class="mwRadio"></i>
-                <span class="mwChoixTexte">
-                    <span class="mwChoixTitre">Par le launcher officiel de Minecraft <span class="mwPetitBadge mwVert">Disponible</span></span>
-                    <span class="mwChoixDetail">MineWorld met tout à jour, puis ouvre le launcher officiel sur le profil MineWorld. Tu cliques sur « Jouer » là-bas.</span>
-                </span>
-            </button>
-            <button class="mwChoix" data-mode="direct">
-                <i class="mwRadio"></i>
-                <span class="mwChoixTexte">
-                    <span class="mwChoixTitre">Directement depuis MineWorld <span class="mwPetitBadge mwVert">Recommandé</span></span>
-                    <span class="mwChoixDetail">Un seul clic sur JOUER, avec ton compte Microsoft. Le launcher MineWorld est validé par Microsoft.</span>
-                </span>
-            </button>
-            <h3 class="mwSousTitre">Dossier du profil MineWorld</h3>
-            <div class="mwChemin">
-                <span id="mwCheminJeu">…</span>
-                <button id="mwOuvrirDossier" class="mwBoutonGris">Ouvrir</button>
+            <nav id="mwSousNav">
+                <button data-onglet="compte" actif><svg viewBox="0 0 24 24" class="mwTrait"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/></svg>Compte</button>
+                <button data-onglet="jeu"><svg viewBox="0 0 24 24" class="mwTrait"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M8 10v4M6 12h4M15.5 11h.01M18 13h.01"/></svg>Jeu</button>
+                <button data-onglet="launcher"><svg viewBox="0 0 24 24" class="mwTrait"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg>Launcher</button>
+                <button data-onglet="apropos"><svg viewBox="0 0 24 24" class="mwTrait"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg>À propos</button>
+            </nav>
+            <div class="mwPanneau" id="mwOnglet_compte">
+                <h3>TES COMPTES</h3>
+                <div id="mwComptes"></div>
+                <button class="mwAjout" id="mwAjoutCompte">+ Ajouter un compte Microsoft</button>
+                <p class="mwNote" id="mwNoteComptes">Pour te déconnecter d'un compte : Réglages avancés › Compte.</p>
             </div>
-            <p class="mwNote">Tes mondes solo et ton profil Minecraft habituel ne sont pas touchés.</p>
-            <h3 class="mwSousTitre">Autres réglages</h3>
-            <button id="settingsMediaButton" class="mwBoutonGris mwLarge">Réglages avancés (comptes, mémoire, Java, mises à jour du launcher)</button>
-            <h3 class="mwSousTitre">Crédits</h3>
-            <div id="mwCredits" class="mwNote">Launcher basé sur Helios Launcher (licence MIT).</div>
+            <div class="mwPanneau" id="mwOnglet_jeu" hidden>
+                <h3>LANCEMENT DU JEU</h3>
+                <div class="mwChoixGrille">
+                    <button class="mwChoix" data-mode="direct">
+                        <i class="mwRadio"></i>
+                        <span class="mwChoixTexte">
+                            <span class="mwChoixTitre">Directement depuis MineWorld <span class="mwPetitBadge mwVert">RECOMMANDÉ</span></span>
+                            <span class="mwChoixDetail">Un seul clic sur JOUER, avec ton compte Microsoft.</span>
+                        </span>
+                    </button>
+                    <button class="mwChoix" data-mode="officiel">
+                        <i class="mwRadio"></i>
+                        <span class="mwChoixTexte">
+                            <span class="mwChoixTitre">Par le launcher officiel</span>
+                            <span class="mwChoixDetail">MineWorld prépare tout, puis ouvre le launcher officiel sur le profil MineWorld.</span>
+                        </span>
+                    </button>
+                </div>
+                <h3>MÉMOIRE ET FENÊTRE</h3>
+                <div class="mwReglage" id="mwReglageRam">
+                    <div class="mwReglageTexte"><b>Mémoire du jeu</b><p id="mwRamDetail"></p></div>
+                    <input type="range" id="mwRam" min="2" max="16" step="1">
+                    <span class="mwValeur" id="mwRamValeur"></span>
+                </div>
+                <div class="mwReglage">
+                    <div class="mwReglageTexte"><b>Plein écran au lancement</b><p>Le jeu s'ouvre en plein écran (mode direct).</p></div>
+                    <button class="mwInter" id="mwPleinEcran"></button>
+                </div>
+                <div class="mwReglage">
+                    <div class="mwReglageTexte"><b>Dossier du jeu</b><p id="mwCheminJeu">…</p></div>
+                    <button id="mwOuvrirDossier" class="mwBoutonGris">Ouvrir</button>
+                </div>
+            </div>
+            <div class="mwPanneau" id="mwOnglet_launcher" hidden>
+                <h3>MISES À JOUR</h3>
+                <div class="mwReglage">
+                    <div class="mwReglageTexte"><b>Version du launcher</b><p id="mwVersionLauncher"></p></div>
+                    <button id="mwChercherMaj" class="mwBoutonGris">Chercher une mise à jour</button>
+                </div>
+                <div class="mwReglage">
+                    <div class="mwReglageTexte"><b>Recevoir les versions d'essai</b><p>Les nouveautés avant tout le monde, parfois moins stables.</p></div>
+                    <button class="mwInter" id="mwVersionsEssai"></button>
+                </div>
+                <p class="mwNote">Les mises à jour s'installent toutes seules : le launcher redémarre quelques secondes, quand aucun lancement n'est en cours.</p>
+                <h3>AUTRES RÉGLAGES</h3>
+                <button id="settingsMediaButton" class="mwBoutonGris mwLarge">Réglages avancés (comptes, Java, mods optionnels, shaders)</button>
+            </div>
+            <div class="mwPanneau" id="mwOnglet_apropos" hidden>
+                <h3>MINEWORLD</h3>
+                <p class="mwTexte">La ville, tes métiers, tes règles. Un serveur de simulation de vie : police, commerces, karting, immobilier… et quelques braqueurs.</p>
+                <h3>CRÉDITS</h3>
+                <div id="mwCredits" class="mwNote">Launcher basé sur Helios Launcher (licence MIT).</div>
+            </div>
         </section>
     </main>
 
     <footer id="mwBarre">
         <div id="server_status_wrapper">
-            <i id="mwPointServeur"></i>
+            <i class="mwRondEtat"><i id="mwPointServeur"></i></i>
             <div class="mwDeuxLignes">
                 <span id="landingPlayerLabel">Serveur</span>
                 <span id="player_count">Recherche…</span>
@@ -125,7 +190,7 @@
         </div>
         <div id="mwMilieu">
             <div id="mwEtatMod">
-                <i class="mwRond mwVert"><svg viewBox="0 0 24 24" class="mwTrait"><path d="M5 12.5l4.4 4.4L19 7.4"/></svg></i>
+                <i class="mwRondEtat mwCyan"><svg viewBox="0 0 24 24" class="mwTrait"><path d="M5 12.5l4.4 4.4L19 7.4"/></svg></i>
                 <div class="mwDeuxLignes">
                     <span id="mwEtatTitre">Prêt à jouer</span>
                     <span id="mwEtatDetail">Minecraft 1.21.11 · Fabric</span>
@@ -141,8 +206,8 @@
         </div>
         <div id="launch_content">
             <button id="launch_button">
-                <span class="mwJouer"><%- lang('landing.launchButton') %></span>
-                <span class="mwEnCours">EN COURS…</span>
+                <span class="mwJouer"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg><%- lang('landing.launchButton') %></span>
+                <span class="mwEnCours">LANCEMENT…</span>
             </button>
         </div>
     </footer>

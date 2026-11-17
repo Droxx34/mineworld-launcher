@@ -161,15 +161,9 @@ document.getElementById('settingsMediaButton').onclick = async e => {
 
 // Bind avatar overlay button.
 document.getElementById('avatarOverlay').onclick = async e => {
-    // MineWorld : en mode « launcher officiel », le compte est géré là-bas : on ouvre nos Paramètres.
-    if(ConfigManager.getModeLancement() === 'officiel'){
-        window.mwAller('parametres')
-        return
-    }
-    await prepareSettings()
-    switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
-        settingsNavItemListener(document.getElementById('settingsNavAccount'), false)
-    })
+    // MineWorld (17/11/2026) : la carte du compte ouvre nos Paramètres, onglet Compte.
+    window.mwAller('parametres')
+    if(typeof window.mwOnglet === 'function') window.mwOnglet('compte')
 }
 
 // Bind selected account
