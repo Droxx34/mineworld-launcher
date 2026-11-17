@@ -376,4 +376,39 @@ function credits(serveur){
     return (Array.isArray(serveur.modules) ? serveur.modules : []).filter(m => typeof m.credit === 'string').map(m => m.credit)
 }
 
-module.exports = { dossierMinecraft, fichiersProfils, preparer, launcherOuvert, ouvrirLauncher, signatureValide, credits, CLE_PROFIL }
+/**
+ * Mode direct (17/11/2026, Microsoft a validé le launcher) : après les téléchargements de Helios, on vérifie aussi la
+ * signature du mod MineWorld (fichier supprimé si elle est fausse) et on active les packs de textures du serveur dans
+ * le dossier de jeu de l'instance, comme en mode officiel.
+ *
+ * @param {Object} serv serveur Helios (HeliosServer), avec ses modules
+ * @param {string} dossierInstances dossier des instances (ConfigManager.getInstanceDirectory())
+ */
+async function preparerDirect(serv, dossierInstances){
+    const tous = []
+    const parcourir = (liste) => {
+        for(const m of liste || []){
+            tous.push(m)
+            parcourir(m.subModules)
+        }
+    }
+    parcourir(serv.modules)
+    for(const m of tous){
+        const brut = m.rawModule || {}
+        if(typeof brut.id !== 'string' || !brut.id.startsWith('fr.mineworld:mineworld-mod')) continue
+        const fichier = m.getPath()
+        const jar = await fs.readFile(fichier)
+        const sig = await telecharger(brut.artifact.url + '.sig').catch(() => null)
+        if(sig == null || !signatureValide(jar, sig.toString('utf8'))){
+            await fs.remove(fichier)
+            throw new Error('Mod MineWorld : signature invalide, fichier refusé.')
+        }
+    }
+    const packs = tous.filter(m => m.rawModule && m.rawModule.type === 'File' && m.rawModule.artifact
+        && typeof m.rawModule.artifact.path === 'string' && /^resourcepacks\/[A-Za-z0-9._-]{1,80}\.zip$/.test(m.rawModule.artifact.path))
+    const jeu = path.join(dossierInstances, serv.rawServer.id)
+    await fs.ensureDir(jeu)
+    await activerPacks(jeu, packs.map(m => path.basename(m.rawModule.artifact.path)))
+}
+
+module.exports = { dossierMinecraft, fichiersProfils, preparer, preparerDirect, launcherOuvert, ouvrirLauncher, signatureValide, credits, CLE_PROFIL }

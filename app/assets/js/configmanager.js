@@ -87,8 +87,9 @@ const DEFAULT_CONFIG = {
         launcher: {
             allowPrerelease: false,
             dataDirectory: dataPath,
-            // MineWorld (13/11/2026) : 'officiel' (par le launcher officiel de Minecraft) ou 'direct'
-            mwModeLancement: 'officiel'
+            // MineWorld (13/11/2026) : 'officiel' (par le launcher officiel de Minecraft) ou 'direct'.
+            // (17/11/2026) Microsoft a validé le launcher : 'direct' par défaut.
+            mwModeLancement: 'direct'
         }
     },
     newsCache: {
@@ -150,6 +151,12 @@ exports.load = function(){
         }
         if(doValidate){
             config = validateKeySet(DEFAULT_CONFIG, config)
+            // MineWorld 0.5.0 (17/11/2026) : tout le monde passe une fois en mode direct ; le mode officiel reste
+            // choisissable ensuite dans Paramètres (ce choix-là est gardé).
+            if(config.settings.launcher.mwDirect050 !== true){
+                config.settings.launcher.mwModeLancement = 'direct'
+                config.settings.launcher.mwDirect050 = true
+            }
             exports.save()
         }
     }

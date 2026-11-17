@@ -635,6 +635,15 @@ async function dlAsync(login = true) {
 
     fullRepairModule.destroyReceiver()
 
+    // MineWorld (17/11/2026) : signature du mod vérifiée et packs de textures activés, comme en mode officiel.
+    try {
+        await require('./assets/js/mineworld-officiel').preparerDirect(serv, ConfigManager.getInstanceDirectory())
+    } catch(err) {
+        loggerLaunchSuite.error('Préparation MineWorld refusée.', err)
+        showLaunchFailure('Lancement impossible', err.message || 'Le mod MineWorld n\'a pas pu être vérifié.')
+        return
+    }
+
     setLaunchDetails(Lang.queryJS('landing.dlAsync.preparingToLaunch'))
 
     const mojangIndexProcessor = new MojangIndexProcessor(

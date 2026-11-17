@@ -471,7 +471,7 @@
             modale('etape', 'Dernière étape', 'Le launcher officiel de Minecraft s\'ouvre, sur le profil MineWorld.', corps,
                 [bouton('Rouvrir le launcher officiel', 'mwBoutonGris', () => Officiel.ouvrirLauncher()),
                     bouton('Compris', 'mwBoutonCyan', fermerModale)],
-                'Bientôt : lancement direct depuis MineWorld, dès que Microsoft aura validé le launcher.')
+                'Plus simple : le lancement direct depuis MineWorld (Paramètres › Lancement du jeu).')
         } catch(err) {
             journal.error('Lancement par le launcher officiel impossible.', err)
             modale('erreur', 'Lancement impossible', String(err && err.message ? err.message : err), null,
