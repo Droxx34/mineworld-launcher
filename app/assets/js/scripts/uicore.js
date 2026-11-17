@@ -62,6 +62,10 @@ if(!isDev){
                     }
                 })
                 showUpdateUI(info)
+                // MineWorld (17/11/2026, Jonathan) : la mise à jour s'installe et le launcher se relance tout seul.
+                if(process.platform !== 'darwin'){
+                    mwInstallerAuto(info)
+                }
                 break
             case 'update-not-available':
                 loggerAutoUpdater.info('No new update found.')
@@ -90,6 +94,44 @@ if(!isDev){
                 break
         }
     })
+}
+
+/**
+ * MineWorld : installe la mise à jour téléchargée et relance le launcher, dès qu'aucun lancement n'est en cours.
+ * Un bandeau prévient le joueur quelques secondes avant.
+ *
+ * @param {Object} info les informations de la mise à jour (version)
+ */
+let mwInstallPrevue = false
+function mwInstallerAuto(info){
+    if(mwInstallPrevue) return
+    mwInstallPrevue = true
+    const essayer = () => {
+        const bouton = document.getElementById('launch_button')
+        if(bouton != null && bouton.hasAttribute('encours')){
+            // un lancement est en cours : on attend qu'il soit fini
+            setTimeout(essayer, 5000)
+            return
+        }
+        let bandeau = document.getElementById('mwBandeauMaj')
+        if(bandeau == null){
+            bandeau = document.createElement('div')
+            bandeau.id = 'mwBandeauMaj'
+            bandeau.style.cssText = 'position:fixed;left:50%;top:22px;transform:translateX(-50%);z-index:100000;'
+                + 'padding:12px 20px;border-radius:14px;background:rgba(14,8,34,.95);border:1px solid rgba(255,45,180,.6);'
+                + 'box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 24px rgba(160,60,255,.4);color:#fff;font-weight:700;font-size:14px;'
+                + 'font-family:inherit;pointer-events:none'
+            document.body.appendChild(bandeau)
+        }
+        const v = info && info.version ? ' ' + info.version : ''
+        bandeau.textContent = 'Mise à jour' + v + ' prête : le launcher redémarre…'
+        setTimeout(() => {
+            if(!isDev){
+                ipcRenderer.send('autoUpdateAction', 'installUpdateNow')
+            }
+        }, 3000)
+    }
+    essayer()
 }
 
 /**

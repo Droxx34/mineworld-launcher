@@ -77,7 +77,8 @@ ipcMain.on('autoUpdateAction', (event, arg, data) => {
             }
             break
         case 'installUpdateNow':
-            autoUpdater.quitAndInstall()
+            // MineWorld (17/11/2026) : installation silencieuse, puis le launcher se relance tout seul.
+            autoUpdater.quitAndInstall(true, true)
             break
         default:
             console.log('Unknown argument', arg)
