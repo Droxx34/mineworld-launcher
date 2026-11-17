@@ -23,8 +23,14 @@ jobs:
       - name: Dépendances
         run: npm ci
         shell: bash
+      - name: Version d'essai publiée (branches essai-*, seulement pour qui reçoit les versions d'essai)
+        if: ${{ startsWith(github.ref, 'refs/heads/essai-') }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist:win -- --publish always -c.publish.releaseType=prerelease
+        shell: bash
       - name: Installateur (sans publier)
-        if: ${{ github.ref != 'refs/heads/main' }}
+        if: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/heads/essai-') }}
         run: npm run dist:win -- --publish never
         shell: bash
       - name: Installateur publié (version de package.json)
