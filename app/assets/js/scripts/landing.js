@@ -771,6 +771,8 @@ async function dlAsync(login = true) {
             procJeu.on('close', () => {
                 toggleLaunchArea(false)
                 mwJeuEnCours(false)
+                // le jeu fermé, le launcher revient : on peut relancer tout de suite (jeton renouvelé au clic)
+                mwRevenir()
             })
 
             setLaunchDetails(Lang.queryJS('landing.dlAsync.doneEnjoyServer'))
