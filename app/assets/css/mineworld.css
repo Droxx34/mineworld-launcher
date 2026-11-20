@@ -1517,6 +1517,18 @@ body {
 #launch_button[encours] .mwEnCours {
     display: inline;
 }
+/* MineWorld (20/11/2026) : Minecraft tourne, le bouton reste grisé jusqu'à la fermeture du jeu */
+.mwLance,
+#launch_button[jeulance] .mwJouer,
+#launch_button[jeulance] .mwEnCours {
+    display: none;
+}
+#launch_button[jeulance] .mwLance {
+    display: inline;
+}
+#launch_button[jeulance] {
+    font-size: 15px;
+}
 
 /* ───────────── première ouverture et connexion ───────────── */
 

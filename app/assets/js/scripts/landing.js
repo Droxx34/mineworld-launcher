@@ -107,7 +107,37 @@ function setDownloadPercentage(percent){
  * @param {boolean} val True to enable, false to disable.
  */
 function setLaunchEnabled(val){
-    document.getElementById('launch_button').disabled = !val
+    document.getElementById('launch_button').disabled = !val || mwJeuLance
+}
+
+/**
+ * MineWorld (20/11/2026, Jonathan) : Minecraft tourne. Le bouton reste grisé (« MINECRAFT EST LANCÉ ») jusqu'à la
+ * fermeture du jeu, pour qu'on ne clique pas plusieurs fois sur JOUER.
+ *
+ * @param {boolean} lance true pendant que le jeu tourne
+ */
+let mwJeuLance = false
+function mwJeuEnCours(lance){
+    mwJeuLance = lance
+    const bouton = document.getElementById('launch_button')
+    bouton.toggleAttribute('jeulance', lance)
+    bouton.disabled = lance
+}
+
+/** MineWorld (20/11/2026) : le launcher se range dans la barre des tâches au clic sur JOUER (la barre de progression y reste). */
+function mwReduire(){
+    try {
+        remote.getCurrentWindow().minimize()
+    } catch(e) { /* fenêtre indisponible */ }
+}
+
+/** MineWorld (20/11/2026) : en cas d'erreur, la fenêtre revient pour qu'on la voie. */
+function mwRevenir(){
+    try {
+        const w = remote.getCurrentWindow()
+        if(w.isMinimized()) w.restore()
+        w.focus()
+    } catch(e) { /* fenêtre indisponible */ }
 }
 
 // Bind launch button
@@ -115,6 +145,9 @@ document.getElementById('launch_button').addEventListener('click', async e => {
     // MineWorld : mode « launcher officiel » (voir mineworld-accueil.js et mineworld-officiel.js).
     if(ConfigManager.getModeLancement() === 'officiel'){
         await window.mwLancerOfficiel()
+        return
+    }
+    if(mwJeuLance){
         return
     }
     // MineWorld : sans compte choisi, JOUER mène à la connexion Microsoft au lieu de lancer le jeu.
@@ -127,6 +160,20 @@ document.getElementById('launch_button').addEventListener('click', async e => {
         return
     }
     loggerLanding.info('Launching game..')
+    // MineWorld (20/11/2026, Jonathan) : à chaque clic sur JOUER, on cherche une mise à jour du launcher (elle s'installe
+    // après la partie) et on revalide le compte (jeton Microsoft rafraîchi s'il a expiré).
+    try {
+        ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
+    } catch(e) { /* pas de recherche possible */ }
+    if(typeof validateSelectedAccount === 'function'){
+        try {
+            if(!await validateSelectedAccount()){
+                return
+            }
+        } catch(e) {
+            loggerLanding.warn('Validation du compte impossible, on continue.', e)
+        }
+    }
     try {
         const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
         const jExe = ConfigManager.getJavaExecutable(ConfigManager.getSelectedServer())
@@ -310,6 +357,8 @@ let serverStatusListener = setInterval(() => refreshServerStatus(true), 300000)
  * @param {string} desc The overlay description.
  */
 function showLaunchFailure(title, desc){
+    mwRevenir()
+    mwJeuEnCours(false)
     setOverlayContent(
         title,
         desc,
@@ -569,6 +618,9 @@ async function dlAsync(login = true) {
     setLaunchDetails(Lang.queryJS('landing.dlAsync.pleaseWait'))
     toggleLaunchArea(true)
     setLaunchPercentage(0, 100)
+    if(login){
+        mwReduire()
+    }
 
     const fullRepairModule = new FullRepair(
         ConfigManager.getCommonDirectory(),
@@ -712,6 +764,14 @@ async function dlAsync(login = true) {
             // Bind listeners to stdout.
             proc.stdout.on('data', tempListener)
             proc.stderr.on('data', gameErrorListener)
+
+            // MineWorld (20/11/2026) : bouton grisé tant que le jeu tourne ; il redevient JOUER à la fermeture
+            mwJeuEnCours(true)
+            const procJeu = proc
+            procJeu.on('close', () => {
+                toggleLaunchArea(false)
+                mwJeuEnCours(false)
+            })
 
             setLaunchDetails(Lang.queryJS('landing.dlAsync.doneEnjoyServer'))
 
